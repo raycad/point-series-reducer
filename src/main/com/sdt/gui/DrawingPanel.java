@@ -3,12 +3,12 @@ import main.com.sdt.seriesreducer.Point;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.List;
 
 public class DrawingPanel extends JPanel {
-    private ArrayList<Point> pointList;
+    private List<Point> pointList;
 
-    public void setPointList(ArrayList<Point> pointList) {
+    public void setPointList(List<Point> pointList) {
         this.pointList = pointList;
     }
 
@@ -18,8 +18,6 @@ public class DrawingPanel extends JPanel {
 
         if (pointList == null)
             return;
-
-        System.out.println("Drawing Point Series Size = " + pointList.size());
 
         // Draw the polyline
         int pointCount = pointList.size();

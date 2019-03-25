@@ -8,7 +8,7 @@
     <properties/>
     <border type="none"/>
     <children>
-      <component id="8c905" class="javax.swing.JLabel">
+      <component id="8c905" class="javax.swing.JLabel" binding="pointsReductionLabel">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -16,7 +16,7 @@
           <text value="Polyline after reducing points..."/>
         </properties>
       </component>
-      <component id="12687" class="main.com.sdt.gui.DrawingPanel" binding="pointSelectionPanel">
+      <component id="12687" class="main.com.sdt.gui.DrawingPanel" binding="pointsCreationPanel">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -24,7 +24,7 @@
           <background color="-1115905"/>
         </properties>
       </component>
-      <component id="e6f27" class="main.com.sdt.gui.DrawingPanel" binding="pointReductionPanel">
+      <component id="e6f27" class="main.com.sdt.gui.DrawingPanel" binding="pointsReductionPanel">
         <constraints>
           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -40,7 +40,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="7b793" class="javax.swing.JLabel">
+          <component id="7b793" class="javax.swing.JLabel" binding="pointsCreationLabel">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>

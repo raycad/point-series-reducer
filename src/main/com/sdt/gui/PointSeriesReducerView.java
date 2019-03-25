@@ -1,58 +1,87 @@
 package main.com.sdt.gui;
 
 import main.com.sdt.seriesreducer.Point;
+import main.com.sdt.seriesreducer.PointSeriesReducer;
 
 import javax.swing.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PointSeriesReducerView {
-    private JButton reducePointsButton;
     public JPanel rootPanel;
-    private DrawingPanel pointReductionPanel;
+    private DrawingPanel pointsReductionPanel;
+    private DrawingPanel pointsCreationPanel;
     private JButton clearButton;
-    private DrawingPanel pointSelectionPanel;
+    private JButton reducePointsButton;
+    private JLabel pointsCreationLabel;
+    private JLabel pointsReductionLabel;
 
-    private ArrayList<Point> pointSeries = new ArrayList<Point>();
+    private List<Point> pointsCreationList = new ArrayList<Point>();
+    private List<Point> pointsReductionList = new ArrayList<Point>();
+
+    private PointSeriesReducer pointSeriesReducer = new PointSeriesReducer();
 
     public PointSeriesReducerView() {
-        pointSelectionPanel.addMouseListener(new MouseAdapter() {
+        pointsCreationPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
                 super.mouseClicked(mouseEvent);
                 Point p = new Point(mouseEvent.getX(), mouseEvent.getY());
-                pointSeries.add(p);
+                pointsCreationList.add(p);
 
-                System.out.println("Point Series Size = " + pointSeries.size());
-                pointSelectionPanel.invalidate();
+                refreshCreationLabel();
+
+                // Redraw the Creation Panel
+                rootPanel.repaint();
             }
         });
-//        pointSelectionPanel
+
         clearButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 // Clear the point series
-                pointSeries.clear();
+                pointsCreationList.clear();
+                pointsReductionList.clear();
+
+                refreshCreationLabel();
+                refreshReductionLabel();
+
+                rootPanel.repaint();
+            }
+        });
+
+        reducePointsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                pointsReductionList.clear();
+                pointSeriesReducer.douglasPeucker(pointsCreationList, 0, pointsCreationList.size(), 3.0d, pointsReductionList);
+
+                refreshReductionLabel();
+                // Redraw the Reduction Panel
+                rootPanel.repaint();
             }
         });
 
         initView();
-        reducePointsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                pointSelectionPanel.invalidate();
-            }
-        });
     }
 
     private void initView() {
-        pointSelectionPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 400, 1000));
-        pointSelectionPanel.setPointList(pointSeries);
+        pointsCreationPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 400, 1000));
+        pointsCreationPanel.setPointList(pointsCreationList);
 
-        pointReductionPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 400, 1000));
+        pointsReductionPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 400, 1000));
+        pointsReductionPanel.setPointList(pointsReductionList);
+
+        refreshCreationLabel();
+        refreshReductionLabel();
     }
 
-    private void refreshSelectionPanel() {
+    private void refreshCreationLabel() {
+        pointsCreationLabel.setText("Click here to draw polyline... (" + pointsCreationList.size() + " points)");
+    }
 
+    private void refreshReductionLabel() {
+        pointsReductionLabel.setText("Polyline after reducing points... (" + pointsReductionList.size() + " points)");
     }
 }
