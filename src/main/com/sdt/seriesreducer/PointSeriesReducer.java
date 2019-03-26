@@ -1,69 +1,92 @@
 package main.com.sdt.seriesreducer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PointSeriesReducer {
-    private static final double sqr(double x) {
-        return Math.pow(x, 2);
+    /**
+     * @brief Calculate the distance from a point to a line
+     * @param pt is the point to calculate the distance
+     * @param lineStart is the start point of the line
+     * @param lineEnd is the end point of the line
+     * @return the distance
+     */
+    private static double perpendicularDistance(Point pt, Point lineStart, Point lineEnd) {
+        double dx = lineEnd.getX() - lineStart.getX();
+        double dy = lineEnd.getY() - lineStart.getY();
+
+        // Normalize
+        double mag = Math.hypot(dx, dy);
+        if (mag > 0.0) {
+            dx /= mag;
+            dy /= mag;
+        }
+        double pvx = pt.getX() - lineStart.getX();
+        double pvy = pt.getY() - lineStart.getY();
+
+        // Get dot product (project pv onto normalized direction)
+        double pvDot = dx * pvx + dy * pvy;
+
+        // Scale line direction vector and subtract it from pv
+        double ax = pvx - pvDot * dx;
+        double ay = pvy - pvDot * dy;
+
+        return Math.hypot(ax, ay);
     }
 
-    private static final double distanceBetweenPoints(Point p1, Point p2) {
-        return sqr(p1.getX() - p2.getX()) + sqr(p1.getY() - p2.getY());
-    }
+    /**
+     * @brief Reduce the number of points used to define its shape/curve using Ramer Douglas Peucker algorithm
+     * @ref https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm
+     * @param pointList is the input points series need to be reduced
+     * @param startIndex is the start point index in the pointList need to be reduced
+     * @param endIndex is the end point index in the pointList need to be reduced
+     * @param tolerance is the distance dimension ε with ε > 0
+     * @param resultList is the output points series after reducing
+     */
+    public static void ramerDouglasPeucker(List<Point> pointList, int startIndex, int endIndex, double tolerance, List<Point> resultList) {
+        if (pointList.size() < 2)
+            return;
 
-    private static final double distanceBetweenPoints(double vx, double vy, double wx, double wy) {
-        return sqr(vx - wx) + sqr(vy - wy);
-    }
-
-    private static final double distanceToSegmentSquared(Point p, Point sp, Point ep) {
-        final double l2 = distanceBetweenPoints(sp, ep);
-        if (l2 == 0)
-            return distanceBetweenPoints(p, sp);
-        final double t = ((p.getX() - sp.getX()) * (ep.getX() - sp.getX()) + (p.getY() - sp.getY()) * (ep.getY() - ep.getY())) / l2;
-        if (t < 0)
-            return distanceBetweenPoints(p, sp);
-        if (t > 1)
-            return distanceBetweenPoints(p, ep);
-        return distanceBetweenPoints(p.getX(), p.getY(), (sp.getX() + t * (ep.getX() - sp.getX())), (sp.getY() + t * (ep.getY() - sp.getY())));
-    }
-
-    private static final double perpendicularDistance(Point p, Point sp, Point ep) {
-        return Math.sqrt(distanceToSegmentSquared(p, sp, ep));
-    }
-
-    public static final void douglasPeucker(List<Point> list, int s, int e, double epsilon, List<Point> resultList) {
-        // Find the point with the maximum distance
-        double dmax = 0;
-        int index = 0;
-
-        final int start = s;
-        final int end = e-1;
-        for (int i = start + 1; i < end; i++) {
-            final Point p = list.get(i);
-            // Start point
-            final Point sp = list.get(start);
-            // End point
-            final Point ep = list.get(end);
-            // Point
-
-            final double d = perpendicularDistance(p, sp, ep);
+        // Find the point with the maximum distance from line between the start and end
+        double dmax = 0.0;
+        int dmaxIndex = startIndex;
+        for (int i = startIndex + 1; i < endIndex; ++i) {
+            double d = perpendicularDistance(pointList.get(i), pointList.get(startIndex), pointList.get(endIndex));
             if (d > dmax) {
-                index = i;
+                dmaxIndex = i;
                 dmax = d;
             }
         }
-        // If max distance is greater than epsilon, recursively simplify
-        if (dmax > epsilon) {
-            // Recursive call
-            douglasPeucker(list, s, index, epsilon, resultList);
-            douglasPeucker(list, index, e, epsilon, resultList);
+
+        // If max distance is greater than tolerance, recursively simplify
+        if (dmax > tolerance) {
+            List<Point> recResults1 = new ArrayList<>();
+            List<Point> recResults2 = new ArrayList<>();
+            List<Point> pointsOfFirstLine = pointList.subList(startIndex, dmaxIndex + 1);
+            List<Point> pointsOfLastLine = pointList.subList(dmaxIndex, endIndex + 1);
+            ramerDouglasPeucker(pointsOfFirstLine, recResults1, tolerance);
+            ramerDouglasPeucker(pointsOfLastLine, recResults2, tolerance);
+
+            // Build the result list
+            resultList.addAll(recResults1.subList(startIndex, recResults1.size() - 1));
+            resultList.addAll(recResults2);
+            if (resultList.size() < 2)
+                throw new RuntimeException("Problem assembling output");
         } else {
-            if ((end-start)>0) {
-                resultList.add(list.get(start));
-                resultList.add(list.get(end));
-            } else {
-                resultList.add(list.get(start));
-            }
+            // Just return start and end points
+            resultList.clear();
+            resultList.add(pointList.get(startIndex));
+            resultList.add(pointList.get(endIndex));
         }
+    }
+
+    /**
+     * @brief Reduce the number of points used to define its shape/curve using Ramer Douglas Peucker algorithm
+     * @param pointList is the input points series need to be reduced
+     * @param tolerance is the distance dimension ε with ε > 0
+     * @param resultList is the output points series after reducing
+     */
+    public static void ramerDouglasPeucker(List<Point> pointList, List<Point> resultList, double tolerance) {
+        ramerDouglasPeucker(pointList, 0, pointList.size() - 1, tolerance, resultList);
     }
 }

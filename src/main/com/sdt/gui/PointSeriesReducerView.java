@@ -4,6 +4,7 @@ import main.com.sdt.seriesreducer.Point;
 import main.com.sdt.seriesreducer.PointSeriesReducer;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,8 @@ public class PointSeriesReducerView {
     private JButton reducePointsButton;
     private JLabel pointsCreationLabel;
     private JLabel pointsReductionLabel;
+    private JTextField toleranceTextField;
+    private JCheckBox showCoordinatesCb;
 
     private List<Point> pointsCreationList = new ArrayList<Point>();
     private List<Point> pointsReductionList = new ArrayList<Point>();
@@ -30,10 +33,7 @@ public class PointSeriesReducerView {
                 Point p = new Point(mouseEvent.getX(), mouseEvent.getY());
                 pointsCreationList.add(p);
 
-                refreshCreationLabel();
-
-                // Redraw the Creation Panel
-                rootPanel.repaint();
+                refreshView();
             }
         });
 
@@ -54,12 +54,18 @@ public class PointSeriesReducerView {
         reducePointsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                pointsReductionList.clear();
-                pointSeriesReducer.douglasPeucker(pointsCreationList, 0, pointsCreationList.size(), 3.0d, pointsReductionList);
+                refreshView();
+            }
+        });
 
-                refreshReductionLabel();
-                // Redraw the Reduction Panel
-                rootPanel.repaint();
+        showCoordinatesCb.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                boolean isCoorShown = showCoordinatesCb.isSelected();
+                pointsCreationPanel.setShowCoordinates(isCoorShown);
+                pointsReductionPanel.setShowCoordinates(isCoorShown);
+
+                refreshView();
             }
         });
 
@@ -73,15 +79,36 @@ public class PointSeriesReducerView {
         pointsReductionPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 400, 1000));
         pointsReductionPanel.setPointList(pointsReductionList);
 
+        toleranceTextField.setText("30");
+
         refreshCreationLabel();
         refreshReductionLabel();
     }
 
     private void refreshCreationLabel() {
-        pointsCreationLabel.setText("Click here to draw polyline... (" + pointsCreationList.size() + " points)");
+        pointsCreationLabel.setText("Click here to draw a curve... (" + pointsCreationList.size() + " points)");
     }
 
     private void refreshReductionLabel() {
-        pointsReductionLabel.setText("Polyline after reducing points... (" + pointsReductionList.size() + " points)");
+        pointsReductionLabel.setText("Curve after reducing points... (" + pointsReductionList.size() + " points)");
+    }
+
+    private void reducePoints() {
+        // Get tolerance value
+        double tolerance = Double.parseDouble(toleranceTextField.getText());
+
+        pointsReductionList.clear();
+        pointSeriesReducer.ramerDouglasPeucker(pointsCreationList, pointsReductionList, tolerance);
+    }
+
+    private void refreshView() {
+        reducePoints();
+
+        // Refresh labels
+        refreshCreationLabel();
+        refreshReductionLabel();
+
+        // Redraw the Reduction Panel
+        rootPanel.repaint();
     }
 }
