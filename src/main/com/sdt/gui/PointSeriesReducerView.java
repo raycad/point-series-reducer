@@ -98,7 +98,7 @@ public class PointSeriesReducerView {
         double tolerance = Double.parseDouble(toleranceTextField.getText());
 
         pointsReductionList.clear();
-        pointSeriesReducer.ramerDouglasPeucker(pointsCreationList, pointsReductionList, tolerance);
+        pointSeriesReducer.ramerDouglasPeucker(pointsCreationList, tolerance, pointsReductionList);
     }
 
     private void refreshView() {

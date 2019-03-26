@@ -64,8 +64,8 @@ public class PointSeriesReducer {
             List<Point> recResults2 = new ArrayList<>();
             List<Point> pointsOfFirstLine = pointList.subList(startIndex, dmaxIndex + 1);
             List<Point> pointsOfLastLine = pointList.subList(dmaxIndex, endIndex + 1);
-            ramerDouglasPeucker(pointsOfFirstLine, recResults1, tolerance);
-            ramerDouglasPeucker(pointsOfLastLine, recResults2, tolerance);
+            ramerDouglasPeucker(pointsOfFirstLine, tolerance, recResults1);
+            ramerDouglasPeucker(pointsOfLastLine, tolerance, recResults2);
 
             // Build the result list
             resultList.addAll(recResults1.subList(startIndex, recResults1.size() - 1));
@@ -86,7 +86,7 @@ public class PointSeriesReducer {
      * @param tolerance is the distance dimension ε with ε > 0
      * @param resultList is the output points series after reducing
      */
-    public static void ramerDouglasPeucker(List<Point> pointList, List<Point> resultList, double tolerance) {
+    public static void ramerDouglasPeucker(List<Point> pointList, double tolerance, List<Point> resultList) {
         ramerDouglasPeucker(pointList, 0, pointList.size() - 1, tolerance, resultList);
     }
 }
