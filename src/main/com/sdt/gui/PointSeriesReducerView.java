@@ -1,10 +1,8 @@
 package main.com.sdt.gui;
 
-import main.com.sdt.seriesreducer.Point;
 import main.com.sdt.seriesreducer.PointSeriesReducer;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +18,8 @@ public class PointSeriesReducerView {
     private JTextField toleranceTextField;
     private JCheckBox showCoordinatesCb;
 
-    private List<Point> pointsCreationList = new ArrayList<Point>();
-    private List<Point> pointsReductionList = new ArrayList<Point>();
+    private List<double[]> pointsCreationList = new ArrayList<double[]>();
+    private List<double[]> pointsReductionList = new ArrayList<double[]>();
 
     private PointSeriesReducer pointSeriesReducer = new PointSeriesReducer();
 
@@ -30,7 +28,7 @@ public class PointSeriesReducerView {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
                 super.mouseClicked(mouseEvent);
-                Point p = new Point(mouseEvent.getX(), mouseEvent.getY());
+                double[] p = {mouseEvent.getX(), mouseEvent.getY()};
                 pointsCreationList.add(p);
 
                 refreshView();

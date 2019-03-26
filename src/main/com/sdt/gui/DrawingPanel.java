@@ -1,15 +1,14 @@
 package main.com.sdt.gui;
-import main.com.sdt.seriesreducer.Point;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
 public class DrawingPanel extends JPanel {
-    private List<Point> pointList;
+    private List<double[]> pointList;
     private boolean showCoordinates = false;
 
-    public void setPointList(List<Point> pointList) {
+    public void setPointList(List<double[]> pointList) {
         this.pointList = pointList;
     }
 
@@ -31,22 +30,22 @@ public class DrawingPanel extends JPanel {
         int x, y;
         // Draw points
         g.setColor(Color.RED);
-        for (Point p : pointList) {
-            x = (int) (p.getX() - size / 2);
-            y = (int) (p.getY() - size / 2);
+        for (double[] p : pointList) {
+            x = (int) (p[0] - size / 2);
+            y = (int) (p[1] - size / 2);
             g.drawOval(x, y, size, size);
 
             if (showCoordinates)
-                g.drawString(String.format("(%d, %d)", (int) p.getX(), (int) p.getY()), (int) (x - 5 * size / 2), (int) (p.getY() - size));
+                g.drawString(String.format("(%d, %d)", (int) p[0], (int) p[1]), (int) (x - 5 * size / 2), (int) (p[1] - size));
         }
 
         // Draw lines
-        Point sp, ep;
+        double[] sp, ep;
         g.setColor(Color.BLUE);
         for (int i = 0; i < pointCount - 1; i++) {
             sp = pointList.get(i);
             ep = pointList.get(i+1);
-            g.drawLine((int)sp.getX(), (int)sp.getY(), (int)ep.getX(), (int)ep.getY());
+            g.drawLine((int)sp[0], (int)sp[1], (int)ep[0], (int)ep[1]);
         }
     }
 }

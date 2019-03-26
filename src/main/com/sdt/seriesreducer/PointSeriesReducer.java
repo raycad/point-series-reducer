@@ -1,19 +1,18 @@
 package main.com.sdt.seriesreducer;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PointSeriesReducer {
     /**
      * @brief Calculate the distance from a point to a line
-     * @param pt is the point to calculate the distance
-     * @param lineStart is the start point of the line
-     * @param lineEnd is the end point of the line
+     * @param pt is the point (an array of double x, y coordinates) to calculate the distance
+     * @param lineStart is the start point (an array of double x, y coordinates) of the line
+     * @param lineEnd is the end point (an array of double x, y coordinates) of the line
      * @return the distance
      */
-    private static double perpendicularDistance(Point pt, Point lineStart, Point lineEnd) {
-        double dx = lineEnd.getX() - lineStart.getX();
-        double dy = lineEnd.getY() - lineStart.getY();
+    private static double perpendicularDistance(double[] pt, double[] lineStart, double[] lineEnd) {
+        double dx = lineEnd[0] - lineStart[0];
+        double dy = lineEnd[1] - lineStart[1];
 
         // Normalize
         double mag = Math.hypot(dx, dy);
@@ -21,8 +20,8 @@ public class PointSeriesReducer {
             dx /= mag;
             dy /= mag;
         }
-        double pvx = pt.getX() - lineStart.getX();
-        double pvy = pt.getY() - lineStart.getY();
+        double pvx = pt[0] - lineStart[0];
+        double pvy = pt[1] - lineStart[1];
 
         // Get dot product (project pv onto normalized direction)
         double pvDot = dx * pvx + dy * pvy;
@@ -43,15 +42,15 @@ public class PointSeriesReducer {
      * @param tolerance is the distance dimension ε with ε > 0
      * @param resultList is the output points series after reducing
      */
-    public static void ramerDouglasPeucker(List<Point> pointList, int startIndex, int endIndex, double tolerance, List<Point> resultList) {
+    public static void ramerDouglasPeucker(List<double[]> pointList, int startIndex, int endIndex, double tolerance, List<double[]> resultList) {
         if (pointList.size() < 2)
             return;
 
         // Find the point with the maximum distance from line between the start and end
-        double dmax = 0.0;
+        double dmax = 0.0, d = 0;
         int dmaxIndex = startIndex;
         for (int i = startIndex + 1; i < endIndex; ++i) {
-            double d = perpendicularDistance(pointList.get(i), pointList.get(startIndex), pointList.get(endIndex));
+            d = perpendicularDistance(pointList.get(i), pointList.get(startIndex), pointList.get(endIndex));
             if (d > dmax) {
                 dmaxIndex = i;
                 dmax = d;
@@ -64,7 +63,8 @@ public class PointSeriesReducer {
             ramerDouglasPeucker(pointList, startIndex, dmaxIndex, tolerance, resultList);
             ramerDouglasPeucker(pointList, dmaxIndex + 1, endIndex, tolerance, resultList);
         } else {
-            if ((endIndex - startIndex) > 0) {
+            // Add start and end points
+            if (endIndex > startIndex) {
                 resultList.add(pointList.get(startIndex));
                 resultList.add(pointList.get(endIndex));
             } else {
@@ -79,7 +79,7 @@ public class PointSeriesReducer {
      * @param tolerance is the distance dimension ε with ε > 0
      * @param resultList is the output points series after reducing
      */
-    public static void ramerDouglasPeucker(List<Point> pointList, double tolerance, List<Point> resultList) {
+    public static void ramerDouglasPeucker(List<double[]> pointList, double tolerance, List<double[]> resultList) {
         ramerDouglasPeucker(pointList, 0, pointList.size() - 1, tolerance, resultList);
     }
 }
