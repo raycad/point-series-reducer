@@ -1,5 +1,6 @@
 package main.com.sdt.seriesreducer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PointSeriesReducer {
@@ -43,11 +44,15 @@ public class PointSeriesReducer {
      * @param resultList is the output points series after reducing
      */
     public static void ramerDouglasPeucker(List<double[]> pointList, int startIndex, int endIndex, double tolerance, List<double[]> resultList) {
-        if (pointList.size() < 2)
-            return;
+        if (endIndex - startIndex == 1) { // 2 points
+            resultList.add(pointList.get(startIndex));
+            resultList.add(pointList.get(endIndex));
+        } else if (endIndex - startIndex == 0) { // 1 point
+            resultList.add(pointList.get(startIndex));
+        }
 
         // Find the point with the maximum distance from line between the start and end
-        double dmax = 0.0, d = 0;
+        double dmax = 0.0, d = 0.0;
         int dmaxIndex = startIndex;
         for (int i = startIndex + 1; i < endIndex; ++i) {
             d = perpendicularDistance(pointList.get(i), pointList.get(startIndex), pointList.get(endIndex));
@@ -59,24 +64,30 @@ public class PointSeriesReducer {
 
         // If max distance is greater than tolerance, recursively simplify
         if (dmax > tolerance) {
-            // Recursive call
-            ramerDouglasPeucker(pointList, startIndex, dmaxIndex, tolerance, resultList);
-            ramerDouglasPeucker(pointList, dmaxIndex + 1, endIndex, tolerance, resultList);
+            List<double[]> recResults1 = new ArrayList<double[]>();
+            List<double[]> recResults2 = new ArrayList<double[]>();
+            List<double[]> pointsOfFirstLine = pointList.subList(startIndex, dmaxIndex + 1);
+            List<double[]> pointsOfLastLine = pointList.subList(dmaxIndex, endIndex + 1);
+
+            // Divide and conquer and call recursively
+            ramerDouglasPeucker(pointsOfFirstLine, tolerance, recResults1);
+            ramerDouglasPeucker(pointsOfLastLine, tolerance, recResults2);
+
+            // Build the result list
+            resultList.addAll(recResults1.subList(startIndex, recResults1.size() - 1));
+            resultList.addAll(recResults2);
         } else {
-            // Add start and end points
-            if (endIndex > startIndex) {
-                resultList.add(pointList.get(startIndex));
-                resultList.add(pointList.get(endIndex));
-            } else {
-                resultList.add(pointList.get(startIndex));
-            }
+            // Just return start and end points
+            resultList.clear();
+            resultList.add(pointList.get(startIndex));
+            resultList.add(pointList.get(endIndex));
         }
     }
 
     /**
      * @brief Reduce the number of points used to define its shape/curve using Ramer Douglas Peucker algorithm
      * @param pointList is the input points series need to be reduced
-     * @param tolerance is the distance dimension ε with ε > 0
+     * @param tolerance is the distance dimension ε with ε > 0. Tolerance for GPS should be 0.015
      * @param resultList is the output points series after reducing
      */
     public static void ramerDouglasPeucker(List<double[]> pointList, double tolerance, List<double[]> resultList) {
