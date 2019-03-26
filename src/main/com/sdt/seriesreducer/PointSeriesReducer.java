@@ -47,8 +47,10 @@ public class PointSeriesReducer {
         if (endIndex - startIndex == 1) { // 2 points
             resultList.add(pointList.get(startIndex));
             resultList.add(pointList.get(endIndex));
+            return;
         } else if (endIndex - startIndex == 0) { // 1 point
             resultList.add(pointList.get(startIndex));
+            return;
         }
 
         // Find the point with the maximum distance from line between the start and end
@@ -74,7 +76,7 @@ public class PointSeriesReducer {
             ramerDouglasPeucker(pointsOfLastLine, tolerance, recResults2);
 
             // Build the result list
-            resultList.addAll(recResults1.subList(startIndex, recResults1.size() - 1));
+            resultList.addAll(recResults1.subList(0, recResults1.size() - 1));
             resultList.addAll(recResults2);
         } else {
             // Just return start and end points
