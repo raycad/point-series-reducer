@@ -60,23 +60,16 @@ public class PointSeriesReducer {
 
         // If max distance is greater than tolerance, recursively simplify
         if (dmax > tolerance) {
-            List<Point> recResults1 = new ArrayList<>();
-            List<Point> recResults2 = new ArrayList<>();
-            List<Point> pointsOfFirstLine = pointList.subList(startIndex, dmaxIndex + 1);
-            List<Point> pointsOfLastLine = pointList.subList(dmaxIndex, endIndex + 1);
-            ramerDouglasPeucker(pointsOfFirstLine, tolerance, recResults1);
-            ramerDouglasPeucker(pointsOfLastLine, tolerance, recResults2);
-
-            // Build the result list
-            resultList.addAll(recResults1.subList(startIndex, recResults1.size() - 1));
-            resultList.addAll(recResults2);
-            if (resultList.size() < 2)
-                throw new RuntimeException("Problem assembling output");
+            // Recursive call
+            ramerDouglasPeucker(pointList, startIndex, dmaxIndex, tolerance, resultList);
+            ramerDouglasPeucker(pointList, dmaxIndex + 1, endIndex, tolerance, resultList);
         } else {
-            // Just return start and end points
-            resultList.clear();
-            resultList.add(pointList.get(startIndex));
-            resultList.add(pointList.get(endIndex));
+            if ((endIndex - startIndex) > 0) {
+                resultList.add(pointList.get(startIndex));
+                resultList.add(pointList.get(endIndex));
+            } else {
+                resultList.add(pointList.get(startIndex));
+            }
         }
     }
 
