@@ -71,10 +71,10 @@ public class PointSeriesReducerView {
     }
 
     private void initView() {
-        pointsCreationPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 400, 1000));
+        pointsCreationPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 400, 1200));
         pointsCreationPanel.setPointList(pointsCreationList);
 
-        pointsReductionPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 400, 1000));
+        pointsReductionPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 400, 1200));
         pointsReductionPanel.setPointList(pointsReductionList);
 
         toleranceTextField.setText("30");
