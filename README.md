@@ -17,11 +17,11 @@ Given a distance dimension tolerance ε > 0 and all the points between the first
 
 Given a tolerance value (ε > 0) and 7 points (P1, P2,..., P7) with the order as above.
 
-* Step 1: Found P3 that has max distance to the line P1P7 and this distance is greater than ε, therefore, we separate the origin set (P1, P2,..., P7) into 2 subset points: (P1, P2, P3) and (P3, P4, P5, P6, P7) and continue applying **RDP** to these two subsets.
+* **Step 1:** Found P3 that has max distance to the line P1P7 and this distance is greater than ε, therefore, we separate the origin set (P1, P2,..., P7) into 2 subset points: (P1, P2, P3) and (P3, P4, P5, P6, P7) and continue applying **RDP** to these two subsets.
 
 ![RDP](./docs/images/rdp_2.png)
 
-* Step 2:
+* **Step 2:**
 
 For the first subset the dmax2 is smaller than ε, hence, we can discard the P2.
 
@@ -29,7 +29,7 @@ For the second subset the dmax3 > ε so we continue separating (P3, P4, P5, P6, 
 
 ![RDP](./docs/images/rdp_3.png)
 
-* Step 3:
+* **Step 3:**
 
 For the subset (P3, P4, P5) the max distance dmax4 < ε, therefore, the point P4 is discarded.
 
@@ -49,16 +49,22 @@ By doing the same steps we have the last simplified curve is P1, P3, P7
 
 ### 3. Application Demo
 
+Demo application is written in Java Swing to demonstrate how the algorithm does. We can input the points series directly on screen. For GPS data you can input double array list (an array of double x, y coordinates) of longitude and latitude data.
+
 ![RDP](./docs/images/demo_app_1.png)
 
-**If ε = 10**
+**If ε = 10** the simplified curve has 9 points
 
 ![RDP](./docs/images/demo_app_2.png)
 
-**If ε = 30**
+**If ε = 30** the simplified curve has 6 points
 
 ![RDP](./docs/images/demo_app_3.png)
 
-**If ε = 60**
+**If ε = 60** the simplified curve has 4 points
 
 ![RDP](./docs/images/demo_app_4.png)
+
+### 4. References
+
+https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm
